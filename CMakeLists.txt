@@ -14,7 +14,7 @@ include_directories(${PROJECT_SOURCE_DIR})
 file(GLOB SOURCES "*.cpp")
 
 # Define the target executable and its sources
-add_executable(${PROJECT_NAME} ${SOURCES})
-
+add_executable(${PROJECT_NAME} ${SOURCES}
+        model.h)
 # Link with math library
 target_link_libraries(${PROJECT_NAME} m)
