@@ -101,13 +101,35 @@ Matrix M(float mx, float my, float mz, float rx, float ry, float rz, float sx, f
 
 }
 //视图变换矩阵
-Matrix V(Vec3f camera, Vec3f center, Vec3f up, int width, int height) {
-
+Matrix V(Vec3f camera, Vec3f center, Vec3f up) {
+    Vec3f z = (camera-center).normalize();
+    Vec3f x = (up^z).normalize();
+    Vec3f y = (z^x).normalize();
+    Matrix Minv = Matrix::identity(4);
+    Matrix Tr = Matrix::identity(4);
+    for (int i=0; i<3; i++) {
+        Minv[0][i] = x[i];
+        Minv[1][i] = y[i];
+        Minv[2][i] = z[i];
+        Tr[i][3] = -center[i];
+    }
+    return Minv*Tr;
 }
 //投影变换（透视）矩阵
-Matrix P(Vec3f camera) {
+Matrix P(Vec3f camera, Vec3f center) {
+    Matrix p = Matrix::identity(4);
+    p[3][2] = -1.f/(camera-center).norm();
+    return p;
+}
+//视口变换矩阵
+Matrix Viewport(int x, int y, int w, int h, int depth) {
     Matrix m = Matrix::identity(4);
-    m[3][2] = -1.f/camera.z;
+    m[0][3] = x+w/2.f;
+    m[1][3] = y+h/2.f;
+    m[2][3] = depth/2.f;
+    m[0][0] = w/2.f;
+    m[1][1] = h/2.f;
+    m[2][2] = depth/2.f;
     return m;
 }
 //绘制直线
@@ -137,19 +159,7 @@ void Rasterize::line(Vec2i t0, Vec2i t1, TGAImage &image, TGAColor color) {
         }
     }
 }
-//双线性插值
-TGAColor bilerp(Vec2f uv, Model*model) {
-    float x0=floor(uv.x), y0=floor(uv.y), x1=x0+1, y1=y0+1;
-    float u=uv.x-x0, v=uv.y-y0;
-    TGAColor c00 = model->diffuse(Vec2i(x0, y0));
-    TGAColor c01 = model->diffuse(Vec2i(x0, y1));
-    TGAColor c10 = model->diffuse(Vec2i(x1, y0));
-    TGAColor c11 = model->diffuse(Vec2i(x1, y1));
-    Vec3f color = Vec3f(c00.r*(1-u)*(1-v) + c01.r*(1-u)*v + c10.r*u*(1-v) + c11.r*u*v,
-                        c00.g*(1-u)*(1-v) + c01.g*(1-u)*v + c10.g*u*(1-v) + c11.g*u*v,
-                        c00.b*(1-u)*(1-v) + c01.b*(1-u)*v + c10.b*u*(1-v) + c11.b*u*v);
-    return color;
-}
+
 //抗锯齿ssaa
 class SSAA4 {
     std::vector<Vec3f> spts;
@@ -161,9 +171,8 @@ public:
         spts.emplace_back(x+0.75f, y+0.75f, z);
         //spts.emplace_back(x,y,z);
     }
-    void cal(Vec3f *pts, Vec2f *uvs, Model*model,TGAImage&image) {
+    void cal(Vec3f *pts, IShader&shader, TGAImage&image) {
         Vec3f colorAccumulator;
-        int num=0;
         for(int i=0;i<spts.size();i++) {
             Vec3f a = spts[i];
             Vec3f bc_screen  = barycentric(pts, a);
@@ -173,16 +182,16 @@ public:
             for (int j=0; j<3; j++)
             {
                 a.z += pts[j][2]*bc_screen[j];
-                uv = uv + uvs[j]*bc_screen[j];
             }
-            TGAColor color = bilerp(uv, model);
-            //TGAColor color = model->diffuse(Vec2i(uv.x, uv.y));
-            zBuffer::getInstance()->test(a.x,a.y,i,a.z,Vec3f(color.r/4.f, color.g/4.f, color.b/4.f));
+            TGAColor color;
+            if(shader.fragment(bc_screen, color)) continue;
+                //TGAColor color = model->diffuse(Vec2i(uv.x, uv.y));
+                zBuffer::getInstance()->test(a.x,a.y,i,a.z,Vec3f(color.r/4.f, color.g/4.f, color.b/4.f));
         }
     }
 };
 //包围盒绘制三角形
-void Rasterize::triangle(Vec3f *pts, Vec2f *uvs, TGAImage &image, Model *model) {
+void Rasterize::triangle(Vec3f *pts, IShader&shader, TGAImage &image) {
     zBuffer::getInstance(image.get_width(), image.get_height());
     Vec3f t0 = pts[0], t1 = pts[1], t2 = pts[2];
     int minx = std::max((float)0,std::min(t0.x, std::min(t1.x, t2.x)));
@@ -194,7 +203,7 @@ void Rasterize::triangle(Vec3f *pts, Vec2f *uvs, TGAImage &image, Model *model) 
     for (P.x=minx; P.x<=maxx; P.x++) {
         for (P.y=miny; P.y<=maxy; P.y++) {
             SSAA4 msaa4(P.x, P.y, 0);
-            msaa4.cal(pts, uvs, model,image);
+            msaa4.cal(pts, shader, image);
             image.set(P.x,P.y,zBuffer::getInstance()->getcolor(P.x,P.y));
             //非抗锯齿版本
             // Vec3f bc_screen  = barycentric(pts, P);
@@ -204,9 +213,9 @@ void Rasterize::triangle(Vec3f *pts, Vec2f *uvs, TGAImage &image, Model *model) 
             // for (int i=0; i<3; i++)
             // {
             //     P.z += pts[i][2]*bc_screen[i];
-            //     uv = uv + uvs[i]*bc_screen[i];
             // }
-            // TGAColor color = model->diffuse(uv);
+            // TGAColor color;
+            // if(shader.fragment(bc_screen, color)) continue;
             // zBuffer::getInstance()->test(P.x,P.y,0,P.z,Vec3f(color.r, color.g, color.b));
             // image.set(P.x,P.y,zBuffer::getInstance()->getcolor(P.x,P.y));
         }
