@@ -15,6 +15,8 @@ file(GLOB SOURCES "*.cpp")
 
 # Define the target executable and its sources
 add_executable(${PROJECT_NAME} ${SOURCES}
-        model.h)
+        model.h
+        rasterize.cpp
+        rasterize.h)
 # Link with math library
 target_link_libraries(${PROJECT_NAME} m)
