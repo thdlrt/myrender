@@ -59,11 +59,23 @@ public:
     }
 };
 //求三角形的重心坐标
-Vec3f barycentric(Vec3f *pts, Vec3f P) {
-    Vec3f u = Vec3f(pts[2][0]-pts[0][0], pts[1][0]-pts[0][0], pts[0][0]-P[0]) ^ Vec3f(pts[2][1]-pts[0][1], pts[1][1]-pts[0][1], pts[0][1]-P[1]);
-    if (std::abs(u.z)<1-0.1) return Vec3f(-1,1,1);
-    return Vec3f(1.f-(u.x+u.y)/u.z, u.y/u.z, u.x/u.z);
-}
+ Vec3f barycentric(Vec3f *pts, Vec3f P) {
+     Vec3f u = Vec3f(pts[2][0]-pts[0][0], pts[1][0]-pts[0][0], pts[0][0]-P[0]) ^ Vec3f(pts[2][1]-pts[0][1], pts[1][1]-pts[0][1], pts[0][1]-P[1]);
+     if (std::abs(u.z)<1-0.1) return Vec3f(-1,1,1);
+     return Vec3f(1.f-(u.x+u.y)/u.z, u.y/u.z, u.x/u.z);
+ }
+ // Vec3f barycentric(Vec2f A, Vec2f B, Vec2f C, Vec2f P) {
+ //     Vec3f s[2];
+ //     for (int i=2; i--; ) {
+ //         s[i][0] = C[i]-A[i];
+ //         s[i][1] = B[i]-A[i];
+ //         s[i][2] = A[i]-P[i];
+ //     }
+ //     Vec3f u = s[0]^s[1];
+ //     if (std::abs(u[2])>1e-2) // dont forget that u[2] is integer. If it is zero then triangle ABC is degenerate
+ //         return Vec3f(1.f-(u.x+u.y)/u.z, u.y/u.z, u.x/u.z);
+ //     return Vec3f(-1,1,1); // in this case generate negative coordinates, it will be thrown away by the rasterizator
+ // }
 //坐标和矩阵间的转化
 Vec3f m2v(Matrix m) {
     return Vec3f(m[0][0]/m[3][0], m[1][0]/m[3][0], m[2][0]/m[3][0]);
@@ -175,7 +187,8 @@ public:
         Vec3f colorAccumulator;
         for(int i=0;i<spts.size();i++) {
             Vec3f a = spts[i];
-            Vec3f bc_screen  = barycentric(pts, a);
+            Vec3f bc_screen = barycentric(pts, a);
+            //Vec3f bc_screen = barycentric(Vec2f(pts[0][0], pts[0][1]), Vec2f(pts[1][0], pts[1][1]), Vec2f(pts[2][0], pts[2][1]), Vec2f(a[0], a[1]));
             if (bc_screen.x<0 || bc_screen.y<0 || bc_screen.z<0) continue;
             a.z = 0;
             Vec2f uv;
