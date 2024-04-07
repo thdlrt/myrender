@@ -8,56 +8,6 @@
 
 #include "model.h"
 
-//zBuffer单例类(SSAA4)
-class zBuffer {
-private:
-    int width, height;
-    Vec3f *frameBuffer;
-    float *deepBuffer;
-    zBuffer(int width, int height) {
-        this->width = width;
-        this->height = height;
-        frameBuffer = new Vec3f[width*height*4];
-        deepBuffer = new float[width*height*4];
-        for(int i=0;i<width*height*4;i++)
-        {
-            frameBuffer[i] = Vec3f(0,0,0);
-            deepBuffer[i] = -std::numeric_limits<float>::max();
-        }
-    }
-    ~zBuffer() {
-        delete [] frameBuffer;
-        delete [] deepBuffer;
-    }
-public:
-    static zBuffer* getInstance(int width=0, int height=0) {
-        static zBuffer instance(width, height);
-        return &instance;
-    }
-    bool test(int x, int y, int i, float z, Vec3f color) {
-        if(x<0||x>=width||y<0||y>=height) return false;
-        if(z>deepBuffer[y*width*4+x*4+i]) {
-            deepBuffer[y*width*4+x*4+i] = z;
-            frameBuffer[y*width*4+x*4+i] = color;
-            return true;
-        }
-        return false;
-    }
-    float getdeep(int x, int y) {
-        float res=-std::numeric_limits<float>::max();
-        for(int i=0;i<4;i++) {
-            res = std::max(res, deepBuffer[y*width*4+x*4+i]);
-        }
-        return res;
-    }
-    Vec3f getcolor(int x, int y) {
-        Vec3f res(0,0,0);
-        for(int i=0;i<4;i++) {
-            res = res + frameBuffer[y*width*4+x*4+i];
-        }
-        return res;
-    }
-};
 //求三角形的重心坐标
  Vec3f barycentric(Vec3f *pts, Vec3f P) {
      Vec3f u = Vec3f(pts[2][0]-pts[0][0], pts[1][0]-pts[0][0], pts[0][0]-P[0]) ^ Vec3f(pts[2][1]-pts[0][1], pts[1][1]-pts[0][1], pts[0][1]-P[1]);
@@ -183,7 +133,7 @@ public:
         spts.emplace_back(x+0.75f, y+0.75f, z);
         //spts.emplace_back(x,y,z);
     }
-    void cal(Vec3f *pts, IShader&shader, TGAImage&image) {
+    void cal(Vec3f *pts, IShader&shader, TGAImage&image, ZBuffer* zBuffer) {
         Vec3f colorAccumulator;
         for(int i=0;i<spts.size();i++) {
             Vec3f a = spts[i];
@@ -197,15 +147,14 @@ public:
                 a.z += pts[j][2]*bc_screen[j];
             }
             TGAColor color;
-            if(shader.fragment(bc_screen, color)) continue;
+            if(shader.fragment(bc_screen, color, a)) continue;
                 //TGAColor color = model->diffuse(Vec2i(uv.x, uv.y));
-                zBuffer::getInstance()->test(a.x,a.y,i,a.z,Vec3f(color.r/4.f, color.g/4.f, color.b/4.f));
+                zBuffer->test(a.x,a.y,i,a.z,Vec3f(color.r/4.f, color.g/4.f, color.b/4.f));
         }
     }
 };
 //包围盒绘制三角形
-void Rasterize::triangle(Vec3f *pts, IShader&shader, TGAImage &image) {
-    zBuffer::getInstance(image.get_width(), image.get_height());
+void Rasterize::triangle(Vec3f *pts, IShader&shader, TGAImage &image, ZBuffer* zBuffer) {
     Vec3f t0 = pts[0], t1 = pts[1], t2 = pts[2];
     int minx = std::max((float)0,std::min(t0.x, std::min(t1.x, t2.x)));
     int maxx = std::min((float)image.get_width()-1,std::max(t0.x, std::max(t1.x, t2.x)));
@@ -216,8 +165,8 @@ void Rasterize::triangle(Vec3f *pts, IShader&shader, TGAImage &image) {
     for (P.x=minx; P.x<=maxx; P.x++) {
         for (P.y=miny; P.y<=maxy; P.y++) {
             SSAA4 msaa4(P.x, P.y, 0);
-            msaa4.cal(pts, shader, image);
-            image.set(P.x,P.y,zBuffer::getInstance()->getcolor(P.x,P.y));
+            msaa4.cal(pts, shader, image, zBuffer);
+            image.set(P.x,P.y,zBuffer->getcolor(P.x,P.y));
             //非抗锯齿版本
             // Vec3f bc_screen  = barycentric(pts, P);
             // if (bc_screen.x<0 || bc_screen.y<0 || bc_screen.z<0) continue;
