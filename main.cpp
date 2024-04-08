@@ -51,7 +51,7 @@ struct PhongShader : public IShader {
 		float dis = (m2v(ModelView*v2m(p))-m2v(ModelView*v2m(camera))).norm()/100;
 		float attenuation = 300.0 / (0.5 * dis + 0.1 * dis * dis);
 		Vec3f ambient = Vec3f(0.8, 0.8, 0.8);
-		Vec3f diffuse = Vec3f(1, 1, 1)*std::max(0.f, normal*mid)*attenuation;
+		Vec3f diffuse = Vec3f(1, 1, 1)*std::max(0.f, normal*light)*attenuation;
 		Vec3f specular = Vec3f(0.3, 0.3, 0.3)*pow(std::max(0.f, normal*mid), model->specular(uv))*attenuation;
 		Vec3f result = ambient*shadow_deffuse+(diffuse+specular)*shadow_reflect;
 		TGAColor c = model->diffuse(uv);

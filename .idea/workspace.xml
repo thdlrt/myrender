@@ -20,18 +20,11 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="42d30a33-6b1a-4ee3-bcdb-ef0875b21632" name="更改" comment="fixbugs">
+    <list default="true" id="42d30a33-6b1a-4ee3-bcdb-ef0875b21632" name="更改" comment="finish">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/.ninja_deps" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/.ninja_deps" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/.ninja_log" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/.ninja_log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/MyRenderer.dir/main.cpp.obj" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/MyRenderer.dir/main.cpp.obj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/MyRenderer.dir/rasterize.cpp.obj" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/MyRenderer.dir/rasterize.cpp.obj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/MyRenderer.exe" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/MyRenderer.exe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/Testing/Temporary/LastTest.log" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/Testing/Temporary/LastTest.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/output.tga" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/output.tga" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/main.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rasterize.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/rasterize.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rasterize.h" beforeDir="false" afterPath="$PROJECT_DIR$/rasterize.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/geometry.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/geometry.h" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -80,6 +73,7 @@
     &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
     &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;E:/course/myraytracer&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -91,9 +85,9 @@
 }</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="E:\course\myrender" />
       <recent name="E:\course\myrender\obj\african_head" />
       <recent name="E:\course\myrender\obj\floor" />
-      <recent name="E:\course\myrender" />
       <recent name="E:\course\myrender\obj" />
     </key>
   </component>
@@ -115,7 +109,9 @@
       <workItem from="1712331803132" duration="4151000" />
       <workItem from="1712336018508" duration="43489000" />
       <workItem from="1712417127105" duration="7000" />
-      <workItem from="1712467969212" duration="21000" />
+      <workItem from="1712467969212" duration="126000" />
+      <workItem from="1712471928948" duration="22000" />
+      <workItem from="1712566246310" duration="7000" />
     </task>
     <task id="LOCAL-00001" summary="init">
       <option name="closed" value="true" />
@@ -173,7 +169,15 @@
       <option name="project" value="LOCAL" />
       <updated>1712420673576</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="finish">
+      <option name="closed" value="true" />
+      <created>1712468096160</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1712468096160</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -202,7 +206,8 @@
     <MESSAGE value="task3" />
     <MESSAGE value="t5" />
     <MESSAGE value="fixbugs" />
-    <option name="LAST_COMMIT_MESSAGE" value="fixbugs" />
+    <MESSAGE value="finish" />
+    <option name="LAST_COMMIT_MESSAGE" value="finish" />
   </component>
   <component name="XDebuggerManager">
     <watches-manager>

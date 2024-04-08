@@ -90,3 +90,11 @@
 1082	2329	7341709419197598	MyRenderer.exe	10d2d8362cb60dc
 5	781	7341710101874988	CMakeFiles/MyRenderer.dir/main.cpp.obj	e77a8a927fb42941
 781	1761	7341710103645067	MyRenderer.exe	10d2d8362cb60dc
+36	1656	7342695103888753	CMakeFiles/MyRenderer.dir/tgaimage.cpp.obj	fe06099973b8f0fe
+13	1744	7342695104015107	CMakeFiles/MyRenderer.dir/geometry.cpp.obj	c9834549813dfdf5
+20	1745	7342695104235647	CMakeFiles/MyRenderer.dir/main.cpp.obj	e77a8a927fb42941
+30	1745	7342695104245673	CMakeFiles/MyRenderer.dir/rasterize.cpp.obj	32f0a887753016b0
+25	1942	7342695106767317	CMakeFiles/MyRenderer.dir/model.cpp.obj	4982289c52f3c5c2
+1942	5408	7342695110899530	MyRenderer.exe	10d2d8362cb60dc
+12	1116	7342695614202096	CMakeFiles/MyRenderer.dir/main.cpp.obj	e77a8a927fb42941
+1117	2206	7342695615935770	MyRenderer.exe	10d2d8362cb60dc
